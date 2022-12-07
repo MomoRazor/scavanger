@@ -1,0 +1,10 @@
+
+{ 
+    "name": "Python - Scavanger", 
+    "build": { 
+        "dockerfile": "Dockerfile"
+    },
+    "extensions": [
+        "ms-python.python"
+    ]
+} 
