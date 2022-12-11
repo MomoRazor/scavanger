@@ -1,10 +1,7 @@
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
 from webdriver_manager.chrome import ChromeDriverManager
-import csv
 
 print('What we scraping today?!')
 
@@ -44,10 +41,6 @@ seperateSearchResults = searchResults.find_elements(by='class name', value='resu
 for searchItem in seperateSearchResults:
     itemName = searchItem.find_element(by='class name', value='name')
     print(itemName.text)
-
-#soup = BeautifulSoup(driver.page_source,features='html.parser')
-
-#print(driver.page_source)
 
 
 
