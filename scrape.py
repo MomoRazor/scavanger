@@ -1,10 +1,10 @@
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from webdriver_manager.chrome import ChromeDriverManager
+import csv
 
 print('What we scraping today?!')
 
@@ -18,7 +18,7 @@ driver=Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 print('What URL are we going to?')
 
-url = "https://www.w3schools.com/html/tryit.asp?filename=tryhtml_intro"
+url = "https://www.spelinspektionen.se/sok-licens/"
 
 print('Going to '+url)
 
@@ -29,15 +29,25 @@ if driver.current_url == url:
 
 print('You can do further navigation (click buttons and stuff)')
 
-button = driver.find_element(by='id', value='runbtn')
+searchDiv = driver.find_element(by='class name', value='license-search-form')
 
-print(button.tag_name)
+searchButton = searchDiv.find_element(by='class name', value='btn-primary')
 
-button.click()
+print(searchButton.text)
 
-soup = BeautifulSoup(driver.page_source,features='html.parser')
+searchButton.click()
 
-print(driver.page_source)
+searchResults = driver.find_element(by='id', value='search-results')
+
+seperateSearchResults = searchResults.find_elements(by='class name', value='result-item')
+
+for searchItem in seperateSearchResults:
+    itemName = searchItem.find_element(by='class name', value='name')
+    print(itemName.text)
+
+#soup = BeautifulSoup(driver.page_source,features='html.parser')
+
+#print(driver.page_source)
 
 
 
