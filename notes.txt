@@ -1,0 +1,4 @@
+- Refactor code for more DRY-ness
+- Make Headless and Headful selection somehow
+- Finish pull needed information
+- Add saving to CSV
