@@ -1,6 +1,7 @@
 - Refactor code for more DRY-ness - DONE
 - Make Headless and Headful selection somehow - DONE
 - Finish pull needed information - DONE
+- Adding random delays between page requests to avoid getting throttled - DONE
 
 Need Doing
 - Found issue with pages that have too many licenses, they might timeout. Timeout is handled, but site offer download of excel, see if we can scape that
@@ -8,4 +9,3 @@ Need Doing
 
 Nice to have
 - Adding User agent changes and setting to avoid getting throttled
-- Adding random delays between page requests to avoid getting throttled

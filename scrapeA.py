@@ -1,15 +1,14 @@
 
 
-from util import getChrome, getUrlAndDomain, loadEnvVars
+import time
+from util import getChrome, getUrlAndDomain, hitSite, loadEnvVars
 
 #Get Enviornmentals
 envs = loadEnvVars()
 
 #Getting the different browsers instances we need for this scrape
 driver=getChrome()
-driver2=getChrome()
-
-driver2.set_page_load_timeout(15)
+driver2=getChrome(downloadUrl='./download/'+str(time.time()))
 
 #This is the url we are using
 url="https://www.spelinspektionen.se/sok-licens/"
@@ -17,7 +16,7 @@ url="https://www.spelinspektionen.se/sok-licens/"
 splitUrl = getUrlAndDomain(url)
 
 #A browser instance will navigate to the url
-driver.get(url)
+hitSite(driver, url)
 
 #From here we start checking the HTML and navigating according to what we need 
 
@@ -46,72 +45,70 @@ for index, searchItem in enumerate(seperateSearchResults, start=0):
 
     print('Scraping '+str(index)+'/'+str(total)+' at '+newUrl)
 
-    try:
-        driver2.get(newUrl)
-    except:
-        print(newUrl + ' timed out!')
+    if not hitSite(driver2, newUrl):
         continue
 
+    exportDiv = driver2.find_element(by='class name', value='export-excel')
+    link = exportDiv.find_element(by='tag name', value='a')
 
-    try:        
-        header = driver2.find_element(by='class name', value='licensee')
+    link.click()
 
-        label = header.find_element("xpath", '//*[@id="company-label"]/following-sibling::div')
-        address = header.find_element("xpath", '//*[@id="company-address-label"]/following-sibling::div')
-
-        licenses = []
-
-        licenseTable = driver2.find_element(by='class name', value='license-list-table')
-
-        tableChildren = licenseTable.find_elements(by='xpath', value='*')
-        total2 = len(tableChildren)    
-
-        if total2 > 10:
-            print(newUrl + ' more than 10 licenses, skipping for now')
-            continue
-
-
-
-        for index2, child in enumerate(tableChildren, start=0):
-
-            if child.tag_name != 'tbody':
-                continue
-
-            print('Scraping License '+str(index2)+'/'+str(total2))
-            domains = []
-
-            try:
-                subTable = child.find_element(by='class name', value='sub-table')
-                domainElements = subTable.find_elements(by='tag name', value='div')
-
-                for domainElement in domainElements:
-                    domains.append(domainElement.text)
-            
-            except:
-                print("SubTable not found for "+newUrl)
-            
-            licenses.append({
-                'type': child.find_element(by='class name', value='license-type').text,
-                'validTill': child.find_element(by='class name', value='license-end').text,
-                'domains': domains
-            })
-
-
-        datum = {
-            'label': label.text,
-            'address':address.text.replace('\n', ', '),
-            'licenses': licenses
-        }
+    time.sleep(5)
     
+    # header = driver2.find_element(by='class name', value='licensee')
 
-        data.append(datum)
-    except:
-        print("Licensee not found for "+newUrl)
+    # label = header.find_element("xpath", '//*[@id="company-label"]/following-sibling::div')
+    # address = header.find_element("xpath", '//*[@id="company-address-label"]/following-sibling::div')
 
-    if limit == 0 and envs.get('limit') == 'true':
+    # licenses = []
+
+    # licenseTable = driver2.find_element(by='class name', value='license-list-table')
+
+    # tableChildren = licenseTable.find_elements(by='xpath', value='*')
+    # total2 = len(tableChildren)    
+
+    # if total2 > 10:
+    #     print(newUrl + ' more than 10 licenses, skipping for now')
+    #     continue
+
+
+
+    # for index2, child in enumerate(tableChildren, start=0):
+
+    #     if child.tag_name != 'tbody':
+    #         continue
+
+    #     print('Scraping License '+str(index2)+'/'+str(total2))
+    #     domains = []
+
+    #     try:
+    #         subTable = child.find_element(by='class name', value='sub-table')
+    #         domainElements = subTable.find_elements(by='tag name', value='div')
+
+    #         for domainElement in domainElements:
+    #             domains.append(domainElement.text)
+        
+    #     except:
+    #         print("SubTable not found for "+newUrl)
+        
+    #     licenses.append({
+    #         'type': child.find_element(by='class name', value='license-type').text,
+    #         'validTill': child.find_element(by='class name', value='license-end').text,
+    #         'domains': domains
+    #     })
+
+
+    # datum = {
+    #     'label': label.text,
+    #     'address':address.text.replace('\n', ', '),
+    #     'licenses': licenses
+    # }
+
+
+    # data.append(datum)
+
+    if limit <= 0 and envs.get('limit') == 'true':
         break
-
-print('data', data)
 
 print('Done Scraping')
 
