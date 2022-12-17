@@ -2,10 +2,11 @@
 - Make Headless and Headful selection somehow - DONE
 - Finish pull needed information - DONE
 - Adding random delays between page requests to avoid getting throttled - DONE
+- Found issue with pages that have too many licenses, they might timeout. Timeout is handled, but site offer download of excel, see if we can scape that - DONE
+- Add saving to CSV - DONE
 
 Need Doing
-- Found issue with pages that have too many licenses, they might timeout. Timeout is handled, but site offer download of excel, see if we can scape that
-- Add saving to CSV
+- Nicer printing of licenses per licensee
 
 Nice to have
 - Adding User agent changes and setting to avoid getting throttled
