@@ -15,3 +15,5 @@ RUN apt-get install ./google-chrome-stable_current_amd64.deb -y
 
 RUN pip install selenium
 RUN pip install webdriver-manager
+RUN pip install pandas
+RUN pip install openpyxl

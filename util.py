@@ -54,4 +54,3 @@ def hitSite(driver, url):
     except:
         print(url + ' timed out!')
         return False
-

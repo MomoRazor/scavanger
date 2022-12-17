@@ -1,6 +1,9 @@
 
 
+import shutil
 import time
+import pandas as pd
+import os
 from util import getChrome, getUrlAndDomain, hitSite, loadEnvVars
 
 #Get Enviornmentals
@@ -8,7 +11,25 @@ envs = loadEnvVars()
 
 #Getting the different browsers instances we need for this scrape
 driver=getChrome()
-driver2=getChrome(downloadUrl='./download/'+str(time.time()))
+
+downloadDir = './download/'
+resultDir = './result/'
+
+timestamp = str(time.time())
+downloadPath = downloadDir+timestamp
+resultPath = resultDir+timestamp
+
+if envs.get('clearFiles') == 'true':
+    if os.path.exists(downloadDir):
+        shutil.rmtree(downloadDir)
+    if os.path.exists(resultDir):
+        shutil.rmtree(resultDir)
+
+if not os.path.exists(resultPath):
+    os.mkdir(resultDir)
+    os.mkdir(resultPath)
+
+driver2=getChrome(downloadUrl=downloadPath)
 
 #This is the url we are using
 url="https://www.spelinspektionen.se/sok-licens/"
@@ -32,7 +53,8 @@ searchResults = driver.find_element(by='id', value='search-results')
 
 seperateSearchResults = searchResults.find_elements(by='class name', value='result-item')
 
-limit = 3
+limit = int(envs.get('limitNumber'))
+
 data = []
 total = len(seperateSearchResults)
 
@@ -48,6 +70,7 @@ for index, searchItem in enumerate(seperateSearchResults, start=0):
     if not hitSite(driver2, newUrl):
         continue
 
+    time.sleep(1)
     exportDiv = driver2.find_element(by='class name', value='export-excel')
     link = exportDiv.find_element(by='tag name', value='a')
 
@@ -55,62 +78,77 @@ for index, searchItem in enumerate(seperateSearchResults, start=0):
 
     time.sleep(5)
     
-    # header = driver2.find_element(by='class name', value='licensee')
-
-    # label = header.find_element("xpath", '//*[@id="company-label"]/following-sibling::div')
-    # address = header.find_element("xpath", '//*[@id="company-address-label"]/following-sibling::div')
-
-    # licenses = []
-
-    # licenseTable = driver2.find_element(by='class name', value='license-list-table')
-
-    # tableChildren = licenseTable.find_elements(by='xpath', value='*')
-    # total2 = len(tableChildren)    
-
-    # if total2 > 10:
-    #     print(newUrl + ' more than 10 licenses, skipping for now')
-    #     continue
-
-
-
-    # for index2, child in enumerate(tableChildren, start=0):
-
-    #     if child.tag_name != 'tbody':
-    #         continue
-
-    #     print('Scraping License '+str(index2)+'/'+str(total2))
-    #     domains = []
-
-    #     try:
-    #         subTable = child.find_element(by='class name', value='sub-table')
-    #         domainElements = subTable.find_elements(by='tag name', value='div')
-
-    #         for domainElement in domainElements:
-    #             domains.append(domainElement.text)
-        
-    #     except:
-    #         print("SubTable not found for "+newUrl)
-        
-    #     licenses.append({
-    #         'type': child.find_element(by='class name', value='license-type').text,
-    #         'validTill': child.find_element(by='class name', value='license-end').text,
-    #         'domains': domains
-    #     })
-
-
-    # datum = {
-    #     'label': label.text,
-    #     'address':address.text.replace('\n', ', '),
-    #     'licenses': licenses
-    # }
-
-
-    # data.append(datum)
-
-    if limit <= 0 and envs.get('limit') == 'true':
+    if envs.get('limitNumber') and limit <= 0:
         break
 
+fileArray = os.listdir(downloadPath)
+
+array = []
+
+for index, file in enumerate(fileArray, start=0):
+
+    array.append({
+        "title": '',
+        "address": '',
+        "licenses": []
+    })
+
+    fullPath = downloadPath+'/'+file
+    excelSheet = pd.read_excel(fullPath)
+
+    keys = excelSheet.keys()
+
+    title = keys[0]
+    info = excelSheet.get(title)
+
+    array[len(array)-1]["title"] = title
+    if len(keys) >= 2:
+        dateColumn = keys[1]
+
+        dates = excelSheet.get(dateColumn)
+
+        address = info[0]
+
+        array[len(array)-1]["address"]  = address
+
+        licenses = []
+        indexSteps = []
+
+        for index, date in enumerate(dates, start=0):
+            if(index == 0):
+                continue
+            
+            if not pd.isnull(date):
+                indexSteps.append(index)
+                newLicense = {
+                    "type": info.get(index),
+                    "expiry": date.strftime("%b %d, %Y"),
+                    "domains": []
+                }
+
+                licenses.append(newLicense)
+            else:
+                if not pd.isnull(info.get(index)):
+                    licenses[len(licenses)-1]['domains'].append(info[index])
+
+        array[len(array)-1]["licenses"] = licenses
+
 print('Done Scraping')
+
+columns = ['title', 'address', 'licenses']
+
+df = pd.DataFrame(array, columns=columns)
+
+fileName = envs.get('fileName')
+
+if fileName:
+    fullPath = resultPath+'/'+fileName+'.xlsx'
+    print(fullPath)
+    df.to_excel(fullPath)
+else:
+    print('No fileName given as Enviornmental Variable')
+    
+print('Results Saved to Excel')
 
 driver2.quit()
 driver.quit()
