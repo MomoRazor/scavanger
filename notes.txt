@@ -10,3 +10,8 @@ Need Doing
 
 Nice to have
 - Adding User agent changes and setting to avoid getting throttled
+
+Enviornmental Variables:
+headless=true/false
+clearFiles=true/false
+limitNumber=*number*
