@@ -10,8 +10,8 @@ from util import getChrome, getUrlAndDomain, hitSite, loadEnvVars
 envs = loadEnvVars()
 
 #set directories
-downloadDir = '.\\download\\'
-resultDir = '.\\result\\'
+downloadDir = './download/'
+resultDir = './result/'
 
 #set directories for downloads and results
 timestamp = str(time.time())
@@ -121,7 +121,7 @@ for index, file in enumerate(fileArray, start=0):
         "licenses": []
     })
 
-    fullPath = downloadPath+'\\'+file
+    fullPath = downloadPath+'/'+file
     excelSheet = pd.read_excel(fullPath)
 
     keys = excelSheet.keys()
@@ -167,7 +167,7 @@ columns = ['title', 'address', 'licenses']
 
 df = pd.DataFrame(array, columns=columns)
 
-fullPath = resultPath+'\\'+fileName+'.xlsx'
+fullPath = resultPath+'/'+fileName+'.xlsx'
 print(fullPath)
 df.to_excel(fullPath)
     
