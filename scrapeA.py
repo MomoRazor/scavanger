@@ -32,11 +32,13 @@ if envs.get('clearFiles') == 'true':
         shutil.rmtree(resultDir)
 
 #Create directories if it does not exists
-if not os.path.exists(resultPath):
+if not os.path.exists(resultDir):
     os.mkdir(resultDir)
+if not os.path.exists(resultPath):
     os.mkdir(resultPath)
-if not os.path.exists(downloadPath):
+if not os.path.exists(downloadDir):
     os.mkdir(downloadDir)
+if not os.path.exists(downloadPath):
     os.mkdir(downloadPath)
 
 #Getting the different browsers instances we need for this scrape
@@ -55,13 +57,13 @@ hitSite(driver, url)
 #From here we start checking the HTML and navigating according to what we need 
 print('Starting Scrape') 
 
-#Find and click 
+#Find and click the search all button
 searchDiv = driver.find_element(by='class name', value='license-search-form')
 searchButton = searchDiv.find_element(by='class name', value='btn-primary')
 searchButton.click()
 
+#Collect search results
 searchResults = driver.find_element(by='id', value='search-results')
-
 seperateSearchResults = searchResults.find_elements(by='class name', value='result-item')
 
 limit = int(envs.get('limitNumber'))
