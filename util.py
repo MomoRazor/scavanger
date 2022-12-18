@@ -20,7 +20,7 @@ def getChrome(downloadUrl=None):
         options.add_argument('--no-sandbox')
 
     if(downloadUrl):
-        cleanedDownloadUrl = downloadUrl.replace('./',os.path.abspath(os.curdir)+'/')
+        cleanedDownloadUrl = downloadUrl.replace('.'+os.sep, os.path.abspath(os.curdir)+os.sep)
         options.add_experimental_option('prefs',{
             "download.default_directory": cleanedDownloadUrl
         })
