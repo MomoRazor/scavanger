@@ -10,8 +10,8 @@ from util import getChrome, getUrlAndDomain, hitSite, loadEnvVars
 envs = loadEnvVars()
 
 #set directories
-downloadDir = './download/'
-resultDir = './result/'
+downloadDir = '.\\download\\'
+resultDir = '.\\result\\'
 
 #set directories for downloads and results
 timestamp = str(time.time())
@@ -66,20 +66,26 @@ searchButton.click()
 searchResults = driver.find_element(by='id', value='search-results')
 seperateSearchResults = searchResults.find_elements(by='class name', value='result-item')
 
+#set limit
 limit = int(envs.get('limitNumber'))
-
-data = []
 total = len(seperateSearchResults)
 
+#iterate through results
 for index, searchItem in enumerate(seperateSearchResults, start=0):
     
-    limit = limit -1
-    id = searchItem.get_attribute('data-license-url')
-
-    newUrl = splitUrl.get("domain")+id
-
+    #Notify User of Progress
     print('Scraping '+str(index)+'/'+str(total)+' at '+newUrl)
 
+    #decrease from limit in case of limited scrape
+    limit = limit -1
+
+    #Get id of individual result
+    id = searchItem.get_attribute('data-license-url')
+
+    #Generate individual result url
+    newUrl = splitUrl.get("domain")+id
+
+    #Hit generated url
     if not hitSite(driver2, newUrl):
         continue
 
@@ -106,7 +112,7 @@ for index, file in enumerate(fileArray, start=0):
         "licenses": []
     })
 
-    fullPath = downloadPath+'/'+file
+    fullPath = downloadPath+'\\'+file
     excelSheet = pd.read_excel(fullPath)
 
     keys = excelSheet.keys()
@@ -152,7 +158,7 @@ columns = ['title', 'address', 'licenses']
 
 df = pd.DataFrame(array, columns=columns)
 
-fullPath = resultPath+'/'+fileName+'.xlsx'
+fullPath = resultPath+'\\'+fileName+'.xlsx'
 print(fullPath)
 df.to_excel(fullPath)
     
