@@ -7,6 +7,7 @@
 
 Need Doing
 - Nicer printing of licenses per licensee
+- Fixing download.default_directory for windows
 
 Nice to have
 - Adding User agent changes and setting to avoid getting throttled

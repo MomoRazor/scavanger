@@ -72,10 +72,6 @@ total = len(seperateSearchResults)
 
 #iterate through results
 for index, searchItem in enumerate(seperateSearchResults, start=0):
-    
-    #Notify User of Progress
-    print('Scraping '+str(index)+'/'+str(total)+' at '+newUrl)
-
     #decrease from limit in case of limited scrape
     limit = limit -1
 
@@ -85,24 +81,37 @@ for index, searchItem in enumerate(seperateSearchResults, start=0):
     #Generate individual result url
     newUrl = splitUrl.get("domain")+id
 
+    #Notify User of Progress
+    print('Scraping '+str(index)+'/'+str(total)+' at '+newUrl)
+
     #Hit generated url
     if not hitSite(driver2, newUrl):
         continue
 
+    #Wait to make sure that page is loaded
     time.sleep(1)
+    
+    #Find Excel Export Link and click it
     exportDiv = driver2.find_element(by='class name', value='export-excel')
     link = exportDiv.find_element(by='tag name', value='a')
-
     link.click()
 
+    #Wait to make sure that excel is loaded
     time.sleep(5)
     
+    #If limited run, check if limit was passed and stop loop
     if envs.get('limitNumber') and limit <= 0:
         break
 
+#Get list of downloaded excel exports
 fileArray = os.listdir(downloadPath)
 
 array = []
+
+#Check for downloaded excel files
+if len(fileArray) == 0:
+    print('Download Folder was found empty :(')
+    quit()
 
 for index, file in enumerate(fileArray, start=0):
 
