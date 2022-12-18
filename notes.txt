@@ -15,3 +15,4 @@ Enviornmental Variables:
 headless=true/false
 clearFiles=true/false
 limitNumber=*number*
+fileName=Scrape1

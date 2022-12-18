@@ -12,12 +12,20 @@ envs = loadEnvVars()
 #Getting the different browsers instances we need for this scrape
 driver=getChrome()
 
+#set directories
 downloadDir = './download/'
 resultDir = './result/'
 
 timestamp = str(time.time())
 downloadPath = downloadDir+timestamp
 resultPath = resultDir+timestamp
+
+
+fileName = envs.get('fileName')
+
+if not fileName
+    print('No fileName given as Enviornmental Variable')
+    quit()
 
 if envs.get('clearFiles') == 'true':
     if os.path.exists(downloadDir):
@@ -139,14 +147,9 @@ columns = ['title', 'address', 'licenses']
 
 df = pd.DataFrame(array, columns=columns)
 
-fileName = envs.get('fileName')
-
-if fileName:
-    fullPath = resultPath+'/'+fileName+'.xlsx'
-    print(fullPath)
-    df.to_excel(fullPath)
-else:
-    print('No fileName given as Enviornmental Variable')
+fullPath = resultPath+'/'+fileName+'.xlsx'
+print(fullPath)
+df.to_excel(fullPath)
     
 print('Results Saved to Excel')
 
