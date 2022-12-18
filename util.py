@@ -23,7 +23,9 @@ def getChrome(downloadUrl=None):
         options.add_experimental_option('prefs',{
             "download.default_directory": downloadUrl
         })
-        options.add_preference(:download, default_directory: downloadUrl)
+        options.add_preference({
+            "download.defaultDirectory": downloadUrl
+        })
     
     driver = Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
