@@ -9,38 +9,43 @@ from util import getChrome, getUrlAndDomain, hitSite, loadEnvVars
 #Get Enviornmentals
 envs = loadEnvVars()
 
-#Getting the different browsers instances we need for this scrape
-driver=getChrome()
-
 #set directories
 downloadDir = './download/'
 resultDir = './result/'
 
+#set directories for downloads and results
 timestamp = str(time.time())
 downloadPath = downloadDir+timestamp
 resultPath = resultDir+timestamp
 
-
+#set resulting excel file name
 fileName = envs.get('fileName')
-
-if not fileName
+if not fileName:
     print('No fileName given as Enviornmental Variable')
     quit()
 
+#Clean up file directories if variables are set
 if envs.get('clearFiles') == 'true':
     if os.path.exists(downloadDir):
         shutil.rmtree(downloadDir)
     if os.path.exists(resultDir):
         shutil.rmtree(resultDir)
 
+#Create directories if it does not exists
 if not os.path.exists(resultPath):
     os.mkdir(resultDir)
     os.mkdir(resultPath)
+if not os.path.exists(downloadPath):
+    os.mkdir(downloadDir)
+    os.mkdir(downloadPath)
 
+#Getting the different browsers instances we need for this scrape
+driver=getChrome()
 driver2=getChrome(downloadUrl=downloadPath)
 
 #This is the url we are using
 url="https://www.spelinspektionen.se/sok-licens/"
+
 #It might be useful to separate the domain from the url, we need it in this case
 splitUrl = getUrlAndDomain(url)
 
@@ -48,13 +53,11 @@ splitUrl = getUrlAndDomain(url)
 hitSite(driver, url)
 
 #From here we start checking the HTML and navigating according to what we need 
-
 print('Starting Scrape') 
 
+#Find and click 
 searchDiv = driver.find_element(by='class name', value='license-search-form')
-
 searchButton = searchDiv.find_element(by='class name', value='btn-primary')
-
 searchButton.click()
 
 searchResults = driver.find_element(by='id', value='search-results')
