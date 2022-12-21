@@ -67,7 +67,10 @@ searchResults = driver.find_element(by='id', value='search-results')
 seperateSearchResults = searchResults.find_elements(by='class name', value='result-item')
 
 #set limit
-limit = int(envs.get('limitNumber'))
+if envs.get('limitNumber'):
+    limit = int(envs.get('limitNumber'))
+else:
+    limit = 0
 total = len(seperateSearchResults)
 
 #iterate through results
