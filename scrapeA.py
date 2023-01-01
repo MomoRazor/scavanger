@@ -163,9 +163,22 @@ for index, file in enumerate(fileArray, start=0):
 
 print('Done Scraping')
 
-columns = ['title', 'address', 'licenses']
+columns = ['title', 'address', 'licenseType', 'licenseExpiry', 'licenseDomains']
 
-df = pd.DataFrame(array, columns=columns)
+formatedArray = []
+for item in array:
+    for item2 in item.get('licenses'):
+        newItem = {
+            "title": item.get('title'),
+            "address": item.get('address'),
+            "licenseType": item2.get('type'),
+            "licenseExpiry": item2.get('expiry'),
+            "licenseDomains": item2.get('domains'),  
+        }
+        formatedArray.append(newItem)
+
+
+df = pd.DataFrame(formatedArray, columns=columns)
 
 fullPath = resultPath+os.sep+fileName+'.xlsx'
 print(fullPath)
