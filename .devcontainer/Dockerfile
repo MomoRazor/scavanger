@@ -1,5 +1,5 @@
 # [Choice] Python version: 3, 3.8, 3.7, 3.6
-FROM python:3.11.0-bullseye
+FROM python:3.11.2-bullseye
 
 RUN apt update
 RUN apt install -y git \
